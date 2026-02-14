@@ -1,172 +1,189 @@
-🔐 IoT Network Intrusion Detection using MLP + RAG Explainability
-📌 Project Overview
+# 🔐 IoT Network Intrusion Detection using MLP + RAG Explainability
 
-This project presents an end-to-end IoT Network Traffic Classification System using a Multi-Layer Perceptron (MLP) neural network trained on the IoT-23 dataset.
+---
 
-The system classifies IoT network flows into multiple categories such as:
+## 📌 1. Project Overview
 
-Benign
+This project presents a complete **IoT Network Traffic Classification System** built using a **Multi-Layer Perceptron (MLP)** trained on the Stratosphere Laboratory **IoT-23 dataset**.
 
-DDoS
+The system performs **multi-class classification of IoT network flows** and integrates a **Retrieval-Augmented Generation (RAG)** layer to provide human-readable explanations for each prediction.
 
-Command & Control (C&C)
+### 🎯 Objective
 
-Port Scan
+* Detect malicious IoT traffic
+* Classify attack types accurately
+* Provide interpretable AI-driven explanations
+* Maintain real-time inference capability
 
-Mirai
+---
 
-Okiru
+## 🧠 2. Core Detection Engine — Multi-Layer Perceptron (MLP)
 
-Torii
+The primary classification model is a deep neural network implemented using **TensorFlow/Keras**.
 
-File Download
+### 🔹 Network Architecture
 
-Heartbeat
+```
+Input Layer (64 Features)
+        ↓
+Dense (512) + ReLU
+        ↓
+Dropout (0.3–0.5) + L2 Regularization
+        ↓
+Dense (256) + ReLU
+        ↓
+Dropout + Batch Normalization
+        ↓
+Dense (128) + ReLU
+        ↓
+Dropout
+        ↓
+Output Layer (Softmax – Multi-Class Classification)
+```
 
-To improve interpretability, the model is integrated with a Retrieval-Augmented Generation (RAG) layer that generates human-readable explanations for predictions.
+### 🔹 Model Configuration
 
-🧠 Core Focus: Multi-Layer Perceptron (MLP)
+* Loss Function: Categorical Cross-Entropy
+* Optimizer: Adam (Learning Rate = 0.001)
+* L2 Regularization: λ = 0.001
+* Dropout: 0.3 – 0.5
+* Early Stopping: Patience = 15 epochs
+* Batch Normalization for training stability
 
-The primary detection engine is a deep neural network built using TensorFlow/Keras.
+### ⚙ Design Rationale
 
-🔹 Architecture
-Input (64 features)
-   ↓
-Dense (512) + ReLU + Dropout
-   ↓
-Dense (256) + ReLU + Dropout
-   ↓
-Dense (128) + ReLU + Dropout
-   ↓
-Output Layer (Softmax – Multi-class classification)
+The architecture is designed to:
 
-🔹 Regularization & Optimization
+* Capture non-linear traffic behavior
+* Prevent overfitting via dropout + L2
+* Maintain computational efficiency
+* Enable real-time classification
 
-L2 Regularization (λ = 0.001)
+---
 
-Dropout (0.3 – 0.5)
+## 📊 3. Dataset
 
-Batch Normalization
+**Dataset Used:** IoT-23
+Source: Stratosphere Laboratory
 
-Adam Optimizer (LR = 0.001)
+### 📁 Dataset Characteristics
 
-Early Stopping (patience = 15)
+* 20 malicious capture scenarios
+* 3 benign capture scenarios
+* ~2 million labeled traffic flows
+* 12 core network flow features
 
-This architecture balances:
+### 🛡 Attack Categories
 
-High accuracy
+* Benign
+* DDoS
+* Command & Control (C&C)
+* Port Scan
+* Mirai
+* Okiru
+* Torii
+* File Download
+* Heartbeat
 
-Generalization
+The dataset reflects real-world IoT malware behaviors including botnets and distributed attacks.
 
-Computational efficiency
+---
 
-Real-time inference capability
+## 🔄 4. Data Preprocessing Pipeline
 
-📊 Dataset
+The preprocessing pipeline ensures clean, normalized, and ML-ready input:
 
-Dataset Used: IoT-23 (Stratosphere Laboratory)
+1. Merged multiple CSV captures
+2. Normalized inconsistent label names
+3. Removed irrelevant columns (ts, uid, service, etc.)
+4. Hashed IP addresses for anonymization
+5. Encoded categorical features (proto, conn_state, history)
+6. Converted numeric columns to proper format
+7. Standardized features using `StandardScaler`
+8. Custom dataset split:
 
-20 malicious captures
+   * 60% Training
+   * 20% Validation
+   * 20% Testing
 
-3 benign captures
+---
 
-2M+ traffic records
-
-12 key network flow features
-
-The dataset contains real IoT malware scenarios including:
-
-Mirai botnet
-
-Okiru botnet
-
-DDoS attacks
-
-C&C communications
-
-Port scanning
-
-🔄 Data Preprocessing Pipeline
-
-Merged multiple CSV files
-
-Cleaned inconsistent label formats
-
-Removed irrelevant columns
-
-Hashed IP addresses for privacy
-
-Encoded categorical variables
-
-Standardized numerical features using StandardScaler
-
-Split dataset (60% train, 20% validation, 20% test)
-
-📈 Model Performance
+## 📈 5. Model Performance & Evaluation
 
 The MLP demonstrated:
 
-Strong convergence during training
+* Stable convergence during training
+* Decreasing training & validation loss
+* Balanced precision across attack classes
+* Strong generalization on unseen test data
 
-Stable validation performance
+### 📌 Evaluation Metrics
 
-Effective generalization on unseen test data
+* Test Loss
+* Accuracy
+* Precision
 
-Balanced accuracy and precision across classes
+Regularization and early stopping effectively minimized overfitting while preserving high detection capability.
 
-Regularization and dropout reduced overfitting while maintaining strong classification capability.
+---
 
-🔍 Explainability Layer (RAG Integration)
+## 🔍 6. Explainability Layer — RAG Integration
 
-To address the black-box nature of neural networks:
+To address the black-box nature of neural networks, a **Retrieval-Augmented Generation (RAG)** module was integrated.
 
-The predicted label is passed to a knowledge base
+### 🔹 Workflow
 
-Relevant cybersecurity information is retrieved
+1. MLP predicts traffic label
+2. Label is mapped to a cybersecurity knowledge base
+3. Contextual information is retrieved
+4. Google Gemini API generates a human-readable explanation
 
-Google Gemini API generates a natural-language explanation
+### 💬 Example Output
 
-Example Output:
+> “The traffic is classified as DDoS due to unusually high packet frequency directed toward a single IP address with abnormal response byte distribution, which indicates a distributed denial-of-service attack pattern.”
 
-“The traffic is classified as DDoS because of high packet volume directed toward a single IP address with abnormal response byte distribution, indicating a distributed denial-of-service behavior.”
+### 🎯 Benefit
 
-This bridges the gap between:
+This integration bridges:
 
-High-performance deep learning
+* High-performance deep learning
+* Analyst-friendly interpretability
+* Transparent decision-making
 
-Human-interpretable security analysis
+---
 
-🛠 Tech Stack
+## 🛠 7. Tech Stack
 
-Python
+* Python
+* TensorFlow / Keras
+* Scikit-learn
+* Pandas / NumPy
+* Matplotlib / Seaborn
+* Google Colab
+* Google Gemini API
 
-TensorFlow / Keras
+---
 
-Scikit-learn
+## 🎯 8. Key Contributions
 
-Pandas / NumPy
-
-Google Colab
-
-Google Gemini API (RAG)
-
-Matplotlib / Seaborn
-
-🎯 Key Contributions
-
-✔ Multi-class IoT malware detection using MLP
-✔ End-to-end ML pipeline
-✔ Real-world dataset usage (IoT-23)
+✔ Multi-class IoT intrusion detection using MLP
+✔ Real-world dataset integration (IoT-23)
+✔ Full ML lifecycle implementation
 ✔ Regularized deep neural architecture
-✔ Explainable AI integration using RAG
-✔ Deployment-ready model artifacts
+✔ RAG-based explainable AI layer
+✔ Scalable and deployment-ready design
 
-🚀 Future Work
+---
 
-Replace MLP with Transformer-based architecture
+## 🚀 9. Future Work
 
-Real-time streaming intrusion detection
+* Replace MLP with Transformer-based architectures
+* Integrate SHAP/LIME for feature-level explainability
+* Real-time streaming traffic classification
+* Deploy via REST API or web dashboard
+* Benchmark against CNN/Hybrid IDS models
 
-Deploy via REST API or dashboard
+---
 
-Integrate SHAP/LIME for feature-level explanations
+
+Tell me and I’ll tailor it.
